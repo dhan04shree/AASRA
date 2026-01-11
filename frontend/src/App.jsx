@@ -3,6 +3,7 @@ import './App.css'
 import Dashboard from "./components/Dashboard"
 import Login from './components/LoginForm'
 import Navbar from './components/Navbar'
+import HomePage from './components/HomePage'
 import Registration from './components/Registration'
 import {Route,Routes} from "react-router-dom"
 function App() {
@@ -11,6 +12,7 @@ function App() {
     <>
     <Navbar/>
       <Routes>
+           <Route path="/" element={<HomePage/>}></Route>
         <Route path="/dashboard" element={<Dashboard/>}></Route>
         <Route path="/register" element={<Registration/>}></Route>
         <Route path="/login" element={<Login/>}></Route>
