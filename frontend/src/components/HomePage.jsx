@@ -77,7 +77,7 @@ export default function HomePage() {
         <div className="flex items-end justify-between flex-wrap gap-3 mb-7">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              Quick Navigation
+             Quick Actions 
             </h2>
             <p className="text-gray-600 mt-2 text-sm sm:text-base">
               Everything you need — eligibility, schemes, tracking & maps.
