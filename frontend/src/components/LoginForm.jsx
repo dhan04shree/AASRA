@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "./AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { User, Lock, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 
 const Login = () => {
@@ -13,6 +13,8 @@ const Login = () => {
 
   const { setToken } = useContext(AuthContext);
   const navigate = useNavigate();
+ const location = useLocation();
+ const from = location.state?.from || "/";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +30,7 @@ const Login = () => {
       setToken(response.data.token);
       localStorage.setItem("token", response.data.token);
 
-      navigate("/dashboard");
+       navigate(from, { replace: true });
     } catch (error) {
       console.error("Authentication failed:", error);
 
