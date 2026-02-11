@@ -34,8 +34,22 @@ export default function Navbar() {
 
             {/* Desktop Links */}
             <div className="hidden md:flex items-center gap-3">
+              <Link
+                      to="/dashboard"
+                      onClick={() => setIsOpen(false)}
+                      // className={`px-4 py-3 rounded-xl text-sm font-semibold transition border ${
+                      //   isActive("/login")
+                      //     ? "bg-blue-600 text-white border-blue-600 shadow"
+                      //     : "bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100"
+                      // }`}
+                    >
+                      <span className="flex items-center gap-3">
+                      Dashboard
+                    </span>
+                    </Link>
               {!token ? (
                 <>
+                
                   {/* Login - Light */}
                   <Link
                     to="/login"
@@ -95,8 +109,23 @@ export default function Navbar() {
           {isOpen && (
             <div className="md:hidden pb-4 pt-2">
               <div className="flex flex-col gap-2 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
+                   <Link
+                      to="/dashboard"
+                      onClick={() => setIsOpen(false)}
+                      // className={`px-4 py-3 rounded-xl text-sm font-semibold transition border ${
+                      //   isActive("/login")
+                      //     ? "bg-blue-600 text-white border-blue-600 shadow"
+                      //     : "bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100"
+                      // }`}
+                    >
+                       <span className="flex items-center gap-3">
+                        
+                        Dashboard
+                      </span>
+                    </Link>
                 {!token ? (
                   <>
+                 
                     {/* Mobile Login - Light */}
                     <Link
                       to="/login"

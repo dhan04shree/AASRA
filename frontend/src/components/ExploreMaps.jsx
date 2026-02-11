@@ -27,15 +27,15 @@ function ExploreMaps() {
   return (
     <div className="min-h-screen bg-white">
       {/* ✅ HEADER */}
-      <header className="w-full border-b bg-white">
+      {/* <header className="w-full border-b bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          {/* Logo */}
+         
           <div className="flex items-center gap-3">
             <div className="h-7 w-7 rounded bg-black"></div>
             <h1 className="text-lg font-semibold tracking-wide">A.A.S.R.A</h1>
           </div>
 
-          {/* Navbar */}
+         
           <nav className="hidden md:flex items-center gap-10 text-[15px] font-medium text-gray-700">
             <Link to="/dashboard" className="hover:text-black">
               Dashboard
@@ -54,7 +54,6 @@ function ExploreMaps() {
             </Link>
           </nav>
 
-          {/* Right side */}
           <div className="flex items-center gap-4">
             <button className="h-10 w-10 rounded-xl border bg-gray-50 flex items-center justify-center hover:bg-gray-100">
               🔔
@@ -62,7 +61,7 @@ function ExploreMaps() {
             <div className="h-10 w-10 rounded-full bg-gray-200 border"></div>
           </div>
         </div>
-      </header>
+      </header> */}
 
       {/* ✅ MAIN LAYOUT */}
       <main className="mx-auto max-w-7xl px-6 py-10">
