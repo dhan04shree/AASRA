@@ -18,6 +18,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth",authRoute);
+app.use("/api/eligibility", require("./routes/eligibility"));
+
 
 app.listen(PORT, () => {
   console.log(`app listetning to port ${PORT}`);
