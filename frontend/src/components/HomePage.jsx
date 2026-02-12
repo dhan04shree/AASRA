@@ -291,8 +291,8 @@ export default function HomePage() {
     ))}
   </div>
 </section>
-{/* ================= IMPACT STATS ================= */}
-<section className="max-w-7xl mx-auto px-4 sm:px-6 pb-14">
+{/* ================= IMPACT STATS =================  */}
+{/* <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-14">
   <div className="rounded-2xl border bg-gradient-to-r from-blue-50 to-white p-6 sm:p-10 shadow-sm">
     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
       <div>
@@ -325,7 +325,7 @@ export default function HomePage() {
       </div>
     </div>
   </div>
-</section>
+</section> */}
 
 {/* ================= FAQ ================= */}
 <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
