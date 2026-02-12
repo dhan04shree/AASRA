@@ -1,0 +1,93 @@
+[
+  {
+    "name": "Pradhan Mantri Awas Yojana",
+    "type": "Central",
+    "state": "All",
+    "launchYear": 2015,
+    "description": "Affordable housing scheme for urban and rural poor.",
+    "benefits": "Interest subsidy up to 6.5%, financial assistance for house construction.",
+    "officialLink": "https://pmaymis.gov.in",
+
+    "eligibility": {
+      "minIncome": 0,
+      "maxIncome": 1800000,
+      "categories": ["EWS", "LIG", "MIG", "SC", "ST", "OBC", "General"],
+      "gender": "Any",
+      "minAge": 18,
+      "maxAge": 70,
+      "locationType": "Both",
+      "landOwnershipRequired": false,
+      "bplRequired": false,
+      "aadhaarRequired": true
+    }
+  },
+
+  {
+    "name": "Dr. Babasaheb Ambedkar Housing Scheme",
+    "type": "State",
+    "state": "Maharashtra",
+    "launchYear": 2017,
+    "description": "Housing assistance for SC and Neo-Buddhist communities.",
+    "benefits": "Financial assistance for house construction.",
+    "officialLink": "https://maharashtra.gov.in",
+
+    "eligibility": {
+      "minIncome": 0,
+      "maxIncome": 300000,
+      "categories": ["SC"],
+      "gender": "Any",
+      "minAge": 18,
+      "maxAge": 65,
+      "locationType": "Both",
+      "landOwnershipRequired": true,
+      "bplRequired": true,
+      "aadhaarRequired": true
+    }
+  },
+
+  {
+    "name": "Ramai Awas Gharkul Yojana",
+    "type": "State",
+    "state": "Maharashtra",
+    "launchYear": 2011,
+    "description": "Housing scheme for Scheduled Castes below poverty line.",
+    "benefits": "Financial support for building houses.",
+    "officialLink": "https://maharashtra.gov.in",
+
+    "eligibility": {
+      "minIncome": 0,
+      "maxIncome": 250000,
+      "categories": ["SC"],
+      "gender": "Any",
+      "minAge": 18,
+      "maxAge": 65,
+      "locationType": "Rural",
+      "landOwnershipRequired": true,
+      "bplRequired": true,
+      "aadhaarRequired": true
+    }
+  },
+
+  {
+    "name": "Indira Awaas Yojana",
+    "type": "Central",
+    "state": "All",
+    "launchYear": 1996,
+    "description": "Rural housing scheme for BPL families.",
+    "benefits": "Financial support for house construction.",
+    "officialLink": "https://rural.nic.in",
+
+    "eligibility": {
+      "minIncome": 0,
+      "maxIncome": 300000,
+      "categories": ["SC", "ST", "OBC", "General"],
+      "gender": "Any",
+      "minAge": 18,
+      "maxAge": 70,
+      "locationType": "Rural",
+      "landOwnershipRequired": false,
+      "bplRequired": true,
+      "aadhaarRequired": true
+    }
+  }
+]
