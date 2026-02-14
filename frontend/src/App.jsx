@@ -16,6 +16,8 @@ import Dashboard_NGO from "./pages/Dashboard_NGO";
 import Projects from "./pages/Projects";
 import Applications from "./pages/Applications";
 import Reports from "./pages/Reports";
+
+import SchemeDetails from "./pages/SchemeDetails";
 function App() {
  
   return (
@@ -54,6 +56,11 @@ function App() {
         <Route path="/schemes" element={
           <ProtectedRoute>
             <ViewSchemes/>
+          </ProtectedRoute>
+          }></Route>
+           <Route path="/schemes/:id" element={
+          <ProtectedRoute>
+            <SchemeDetails/>
           </ProtectedRoute>
           }></Route>
 
