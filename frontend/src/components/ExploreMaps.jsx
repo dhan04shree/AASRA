@@ -1,151 +1,229 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { AuthContext } from "./AuthContext";
-import { Navigate, Link } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import L from "leaflet";
+import { useMap } from "react-leaflet";
+
+function FitBounds({ geoData }) {
+  if (!geoData?.features?.length) return;
+  const map = useMap();
+  useEffect(() => {
+    if (!geoData || !geoData.features || geoData.features.length === 0) return;
+
+    const layer = L.geoJSON(geoData);
+    const bounds = layer.getBounds();
+
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [60, 60] });
+    }
+
+  }, [geoData, map]);
+
+  return null;
+}
+
 
 function ExploreMaps() {
+
   const { token, loading } = useContext(AuthContext);
+  const mapRef = useRef(null);
+// const geoJsonRef = useRef(null);
 
-  // Filter State
+  // State
   const [area, setArea] = useState("");
-  const [scheme, setScheme] = useState("");
-  const [status, setStatus] = useState("");
+  const [geoData, setGeoData] = useState(null);
+  const [schemes, setSchemes] = useState([]);
+  const [areaInfo, setAreaInfo] = useState(null);
 
-  if (loading) return null;
+  // Load all slums initially
+  useEffect(() => {
+    fetch("http://localhost:3001/api/slums")
+      .then(res => res.json())
+      .then(data => setGeoData(data));
+  }, []);
+  useEffect(() => {
 
-  // Protected route
-  if (!token) {
-    return <Navigate to="/login" replace />;
+  // if empty → reset map
+  if (!area.trim()) {
+    fetch("http://localhost:3001/api/slums")
+      .then(res => res.json())
+      .then(data => {
+        setGeoData(data);
+        setAreaInfo(null);
+        setSchemes([]);
+      });
+    return;
   }
 
-  const handleApplyFilters = (e) => {
-    e.preventDefault();
-    console.log("Applied Filters:", { area, scheme, status });
+  // debounce timer
+  const timer = setTimeout(async () => {
 
-    // ✅ Later you can connect this with backend API
+    const res = await fetch(`http://localhost:3001/api/area/${area}`);
+
+    if (!res.ok) return;
+
+    const data = await res.json();
+
+    setGeoData({
+      type: "FeatureCollection",
+      features: [{
+        type: "Feature",
+        properties: data.area,
+        geometry: data.geometry
+      }]
+    });
+
+    setAreaInfo(data.area);
+    setSchemes(data.schemes || []);
+
+  }, 400); // wait 400ms after typing stops
+
+  return () => clearTimeout(timer);
+
+}, [area]);
+
+
+
+  if (loading) return null;
+  if (!token) return <Navigate to="/login" replace />;
+
+
+
+  useEffect(() => {
+  if (area.trim() !== "") return;
+
+  // If search box is empty → reset automatically
+  fetch("http://localhost:3001/api/slums")
+    .then(res => res.json())
+    .then(data => {
+      setGeoData(data);
+      setAreaInfo(null);
+      setSchemes([]);
+    });
+
+}, [area]);
+
+
+  // Popup Info
+ const onEachFeature = (feature, layer) => {
+  const p = feature.properties;
+
+  const popupContent = `
+    <b>${p.name}</b><br/>
+    Water: ${p.water ? "Available" : "Not Available"}<br/>
+    Toilet: ${p.toilet ? "Available" : "Not Available"}<br/>
+    Shelter: ${p.shelter ? "Permanent" : "Temporary"}<br/>
+    Density: ${p.density}
+  `;
+
+  layer.bindPopup(popupContent);
+
+  // Auto open when only one feature
+  if (geoData && geoData.features && geoData.features.length === 1) {
+    setTimeout(() => layer.openPopup(), 200);
+  }
+};
+
+
+  // Color Styling
+  const styleFeature = (feature) => {
+    const p = feature.properties;
+
+    if (!p.shelter) return { color: "red", weight: 2 };
+    if (!p.water) return { color: "blue", weight: 2 };
+    if (!p.toilet) return { color: "orange", weight: 2 };
+
+    return { color: "green", weight: 2 };
   };
 
   return (
     <div className="min-h-screen bg-white">
-      {/* ✅ HEADER */}
-      {/* <header className="w-full border-b bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-         
-          <div className="flex items-center gap-3">
-            <div className="h-7 w-7 rounded bg-black"></div>
-            <h1 className="text-lg font-semibold tracking-wide">A.A.S.R.A</h1>
-          </div>
-
-         
-          <nav className="hidden md:flex items-center gap-10 text-[15px] font-medium text-gray-700">
-            <Link to="/dashboard" className="hover:text-black">
-              Dashboard
-            </Link>
-            <Link to="/projects" className="hover:text-black">
-              Projects
-            </Link>
-            <Link to="/applications" className="hover:text-black">
-              Applications
-            </Link>
-            <Link to="/reports" className="hover:text-black">
-              Reports
-            </Link>
-            <Link to="/analytics" className="hover:text-black">
-              Analytics
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <button className="h-10 w-10 rounded-xl border bg-gray-50 flex items-center justify-center hover:bg-gray-100">
-              🔔
-            </button>
-            <div className="h-10 w-10 rounded-full bg-gray-200 border"></div>
-          </div>
-        </div>
-      </header> */}
-
-      {/* ✅ MAIN LAYOUT */}
       <main className="mx-auto max-w-7xl px-6 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* ✅ LEFT FILTER PANEL */}
-          <aside className="lg:col-span-4">
-            <h2 className="text-3xl font-bold mb-8">Filters</h2>
 
-            <form onSubmit={handleApplyFilters}>
-              {/* Area */}
-              <div className="mb-7">
-                <label className="block text-[16px] font-semibold text-gray-800 mb-3">
-                  Area
-                </label>
-                <select
-                  value={area}
-                  onChange={(e) => setArea(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 px-4 py-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select</option>
-                  <option value="Hadapsar">Hadapsar</option>
-                  <option value="Kothrud">Kothrud</option>
-                  <option value="Shivajinagar">Shivajinagar</option>
-                </select>
+          {/* LEFT PANEL */}
+          <aside className="lg:col-span-4 space-y-4">
+
+            <input
+              type="text"
+              placeholder="Search area..."
+              value={area}
+              onChange={(e) => {
+                setArea(e.target.value);
+              }}
+              className="border p-2 rounded w-full"
+              
+            />
+
+
+            {/* <button
+              onClick={searchArea}
+              className="bg-blue-600 text-white px-4 py-2 rounded w-full"
+            >
+              Search & Show Schemes
+            </button> */}
+
+
+            {areaInfo && (
+              <div className="border p-3 rounded bg-gray-50">
+                <h3 className="font-bold mb-2">Area Information</h3>
+
+                <p><b>Name:</b> {areaInfo.name}</p>
+                <p><b>Water:</b> {areaInfo.water ? "Available" : "Not Available"}</p>
+                <p><b>Toilet:</b> {areaInfo.toilet ? "Available" : "Not Available"}</p>
+                <p><b>Shelter:</b> {areaInfo.shelter ? "Permanent" : "Temporary"}</p>
+                <p><b>Density:</b> {areaInfo.density}</p>
               </div>
+            )}
 
-              {/* Scheme */}
-              <div className="mb-7">
-                <label className="block text-[16px] font-semibold text-gray-800 mb-3">
-                  Scheme
-                </label>
-                <select
-                  value={scheme}
-                  onChange={(e) => setScheme(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 px-4 py-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select</option>
-                  <option value="PMAY">PMAY</option>
-                  <option value="SlumRehab">Slum Rehabilitation</option>
-                  <option value="AffordableHousing">Affordable Housing</option>
-                </select>
-              </div>
+            {/* Scheme Info */}
+           <div className="mt-4">
+              <h3 className="font-bold text-lg">Applicable Government Schemes</h3>
 
-              {/* Status */}
-              <div className="mb-10">
-                <label className="block text-[16px] font-semibold text-gray-800 mb-3">
-                  Status
-                </label>
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 px-4 py-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select</option>
-                  <option value="Active">Active</option>
-                  <option value="UnderConstruction">Under Construction</option>
-                  <option value="Completed">Completed</option>
-                </select>
-              </div>
+              {schemes.length === 0 && areaInfo && (
+                <p className="text-gray-500">No schemes available for this area</p>
+              )}
 
-              {/* Button */}
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-blue-600 py-4 font-semibold text-white hover:bg-blue-700 transition shadow-sm"
-              >
-                Apply Filters
-              </button>
-            </form>
+              {schemes.map((s) => (
+                <div key={s._id} className="border p-3 mt-3 rounded bg-blue-50">
+                  <p className="font-semibold">{s.name}</p>
+                  <p className="text-sm">{s.description}</p>
+                  <a href={s.officialLink} target="_blank" className="text-blue-600 underline">
+                    Official Website
+                  </a>
+                </div>
+              ))}
+            </div>
+
+
           </aside>
 
-          {/* ✅ RIGHT MAIN CONTENT */}
+          {/* MAP */}
           <section className="lg:col-span-8">
-            <h1 className="text-5xl font-extrabold text-gray-900">
-              Interactive Map Dashboard
-            </h1>
+            <MapContainer
+              center={[18.5204, 73.8567]}
+              zoom={12}
+              whenCreated={(map) => (mapRef.current = map)}
+              style={{ height: "80vh" }}
+            >
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-            <p className="mt-4 text-lg text-gray-500 leading-relaxed max-w-2xl">
-              Explore the current status of slum rehabilitation projects and
-              affordable housing initiatives across Pune.
-            </p>
+              {geoData && (
+                <>
+                  <GeoJSON
+                    data={geoData}
+                    style={styleFeature}
+                    onEachFeature={onEachFeature}
+                  />
 
-            {/* ✅ BLANK MAP AREA (white page) */}
-            <div className="mt-8 h-[520px] w-full rounded-2xl border border-gray-200 bg-white shadow-sm"></div>
+                  <FitBounds geoData={geoData} />
+                </>
+              )}
+            </MapContainer>
+
           </section>
+
         </div>
       </main>
     </div>

@@ -1,0 +1,70 @@
+{
+"type": "FeatureCollection",
+"features": [
+
+{
+"type":"Feature",
+"properties":{"name":"Yerwada Settlement"},
+"geometry":{
+"type":"Polygon",
+"coordinates":[[
+[73.8892,18.5546],
+[73.8925,18.5538],
+[73.8941,18.5554],
+[73.8928,18.5572],
+[73.8897,18.5569],
+[73.8892,18.5546]
+]]
+}
+},
+
+{
+"type":"Feature",
+"properties":{"name":"Janata Vasahat"},
+"geometry":{
+"type":"Polygon",
+"coordinates":[[
+[73.8075,18.5052],
+[73.8098,18.5046],
+[73.8112,18.5064],
+[73.8097,18.5078],
+[73.8073,18.5071],
+[73.8075,18.5052]
+]]
+}
+},
+
+{
+"type":"Feature",
+"properties":{"name":"Parvati Hill Basti"},
+"geometry":{
+"type":"Polygon",
+"coordinates":[[
+[73.8554,18.4902],
+[73.8580,18.4897],
+[73.8592,18.4915],
+[73.8576,18.4932],
+[73.8550,18.4926],
+[73.8554,18.4902]
+]]
+}
+},
+
+{
+"type":"Feature",
+"properties":{"name":"Khadki Railway Camp"},
+"geometry":{
+"type":"Polygon",
+"coordinates":[[
+[73.8405,18.5672],
+[73.8427,18.5668],
+[73.8442,18.5683],
+[73.8429,18.5701],
+[73.8403,18.5696],
+[73.8405,18.5672]
+]]
+}
+}
+
+]
+}

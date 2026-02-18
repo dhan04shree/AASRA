@@ -20,6 +20,12 @@ app.use(express.json());
 app.use("/api/auth",authRoute);
 app.use("/api/eligibility", require("./routes/eligibility"));
 app.use("/api/schemes", require("./routes/schemes"));
+app.use("/api/slums", require("./routes/slums"));
+app.use("/api/schememap", require("./routes/schemeMap"));
+app.use("/api/area", require("./routes/areaSearch"));
+app.use("/api/filter", require("./routes/filter"));
+
+
 
 app.listen(PORT, () => {
   console.log(`app listetning to port ${PORT}`);
