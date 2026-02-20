@@ -30,29 +30,7 @@ const Dashboard_NGO = () => {
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-2xl font-bold mb-6">NGO Dashboard</h1>
 
-      {/* 🔥 Top Action Buttons */}
-      <div className="flex gap-4 mb-6">
-        <button
-          onClick={() => navigate("/projects")}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
-        >
-          + Add New Project
-        </button>
 
-        <button
-          onClick={() => navigate("/applications")}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          View Applications
-        </button>
-
-        <button
-          onClick={() => navigate("/reports")}
-          className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition"
-        >
-          Generate Report
-        </button>
-      </div>
 
       {/* 🔥 Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
