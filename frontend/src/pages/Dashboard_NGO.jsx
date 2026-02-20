@@ -1,41 +1,110 @@
-export default function Dashboard_NGO() {
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+
+const Dashboard_NGO = () => {
+  const navigate = useNavigate();
+
+  // 🔹 Dummy statistics
+  const totalProjects = 5;
+  const totalApplications = 120;
+  const approved = 75;
+  const pending = 45;
+
+  // 🔹 Pie Chart Data
+  const applicationData = [
+    { name: "Approved", value: approved },
+    { name: "Pending", value: pending },
+  ];
+
+  const COLORS = ["#16a34a", "#facc15"];
+
   return (
-    <>
-      {/* Top Bar */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
-        <input
-          placeholder="Search"
-          className="px-4 py-2 border rounded-lg text-sm"
-        />
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-2xl font-bold mb-6">NGO Dashboard</h1>
+
+      {/* 🔥 Top Action Buttons */}
+      <div className="flex gap-4 mb-6">
+        <button
+          onClick={() => navigate("/projects")}
+          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+        >
+          + Add New Project
+        </button>
+
+        <button
+          onClick={() => navigate("/applications")}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        >
+          View Applications
+        </button>
+
+        <button
+          onClick={() => navigate("/reports")}
+          className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition"
+        >
+          Generate Report
+        </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-6 mb-8">
-        {[
-          { label: "Total Projects", value: 120 },
-          { label: "Active Applications", value: 45 },
-          { label: "Completed Projects", value: 75 },
-        ].map((item) => (
-          <div key={item.label} className="bg-white p-6 rounded-xl border">
-            <p className="text-sm text-gray-500">{item.label}</p>
-            <p className="text-2xl font-semibold">{item.value}</p>
-          </div>
-        ))}
+      {/* 🔥 Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-gray-500">Total Projects</h2>
+          <p className="text-3xl font-bold mt-2">{totalProjects}</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-gray-500">Total Applications</h2>
+          <p className="text-3xl font-bold mt-2">{totalApplications}</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-gray-500">Approved Applications</h2>
+          <p className="text-3xl font-bold mt-2 text-green-600">
+            {approved}
+          </p>
+        </div>
       </div>
-       {/* Recent Applications */} 
-       <div className="bg-white rounded-xl border p-6"> 
-        <h2 className="font-medium mb-4">Recent Applications</h2>
-         <table className="w-full text-sm"> 
-          <thead className="text-gray-500 border-b"> 
-            <tr> <th className="text-left py-2">Applicant Name</th>
-             <th className="text-left py-2">Project</th> <th className="text-left py-2">Status</th> <th className="text-left py-2">Date Submitted</th> 
-             </tr> </thead>
-              <tbody className="divide-y">
-                 {[ { name: "Emily Carter", project: "Green Valley Housing", status: "Pending", date: "2024-07-20", }, { name: "Liam Foster", project: "Urban Renewal Initiative", status: "Approved", date: "2024-07-15", }, ].map((row) => ( <tr key={row.name}> <td className="py-3">{row.name}</td>
-                  <td className="text-green-700">{row.project}</td> 
-                  <td> <span className="px-3 py-1 rounded-full bg-gray-100 text-xs"> {row.status} </span> </td> 
-                  <td className="text-gray-500">{row.date}</td> </tr> ))} </tbody> </table> </div>
-    </>
+
+      {/* 🔥 Pie Chart Section */}
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h2 className="text-lg font-semibold mb-4">
+          Applications Status Overview
+        </h2>
+
+        <ResponsiveContainer width="100%" height={400}>
+          <PieChart>
+            <Pie
+              data={applicationData}
+              cx="50%"
+              cy="50%"
+              outerRadius={130}
+              dataKey="value"
+              label
+            >
+              {applicationData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
+
+            <Tooltip />
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
-}
+};
+
+export default Dashboard_NGO;
