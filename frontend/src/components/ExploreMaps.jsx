@@ -3,236 +3,291 @@ import { AuthContext } from "./AuthContext";
 import { Navigate } from "react-router-dom";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import L from "leaflet";
-import { useMap } from "react-leaflet";
 
-function FitBounds({ geoData }) {
-  if (!geoData?.features?.length) return;
-  const map = useMap();
-  useEffect(() => {
-    if (!geoData || !geoData.features || geoData.features.length === 0) return;
-
-    const layer = L.geoJSON(geoData);
-    const bounds = layer.getBounds();
-
-    if (bounds.isValid()) {
-      map.fitBounds(bounds, { padding: [60, 60] });
-    }
-
-  }, [geoData, map]);
-
-  return null;
-}
-
+import SlumHeatLayer from "../pages/SlumHeatLayer";
+import SlumLayer from "../pages/SlumLayer";
 
 function ExploreMaps() {
 
-  const { token, loading } = useContext(AuthContext);
-  const mapRef = useRef(null);
-// const geoJsonRef = useRef(null);
+const { token, loading } = useContext(AuthContext);
+const mapRef = useRef(null);
 
-  // State
-  const [area, setArea] = useState("");
-  const [geoData, setGeoData] = useState(null);
-  const [schemes, setSchemes] = useState([]);
-  const [areaInfo, setAreaInfo] = useState(null);
+// map controls
+const [mapType, setMapType] = useState("street");
+const [showHeat,setShowHeat] = useState(true);
+const [showDensity,setShowDensity] = useState(false);
+const [showBoundary,setShowBoundary] = useState(false);
 
-  // Load all slums initially
-  useEffect(() => {
-    fetch("http://localhost:3001/api/slums")
-      .then(res => res.json())
-      .then(data => setGeoData(data));
-  }, []);
-  useEffect(() => {
+const [heatStyle, setHeatStyle] = useState("medium");
 
-  // if empty → reset map
-  if (!area.trim()) {
-    fetch("http://localhost:3001/api/slums")
-      .then(res => res.json())
-      .then(data => {
-        setGeoData(data);
-        setAreaInfo(null);
-        setSchemes([]);
-      });
-    return;
-  }
 
-  // debounce timer
-  const timer = setTimeout(async () => {
+// search states
+const [area, setArea] = useState("");
+const [geoData, setGeoData] = useState(null);
+const [schemes, setSchemes] = useState([]);
+const [areaInfo, setAreaInfo] = useState(null);
 
-    const res = await fetch(`http://localhost:3001/api/area/${area}`);
+// initial load
+// useEffect(() => {
+// fetch("http://localhost:3001/api/slum_boundary")
+// .then(res => res.json())
+// .then(setGeoData);
+// }, []);
 
-    if (!res.ok) return;
+// search debounce
+useEffect(() => {
+if (!area.trim()) return;
 
-    const data = await res.json();
 
-    setGeoData({
-      type: "FeatureCollection",
-      features: [{
-        type: "Feature",
-        properties: data.area,
-        geometry: data.geometry
-      }]
-    });
+const timer = setTimeout(async () => {
+  const res = await fetch(`http://localhost:3001/api/area/${area}`);
+  if (!res.ok) return;
 
-    setAreaInfo(data.area);
-    setSchemes(data.schemes || []);
+  const data = await res.json();
 
-  }, 400); // wait 400ms after typing stops
+  setGeoData({
+    type: "FeatureCollection",
+    features: [{
+      type: "Feature",
+      properties: data.area,
+      geometry: data.geometry
+    }]
+  });
 
-  return () => clearTimeout(timer);
+  setAreaInfo(data.area);
+  setSchemes(data.schemes || []);
+
+}, 400);
+
+return () => clearTimeout(timer);
+
 
 }, [area]);
 
+// auth guard
+if (loading) return null;
+if (!token) return <Navigate to="/login" replace />;
+
+return ( <div className="min-h-screen bg-white"> <main className="mx-auto max-w-7xl px-6 py-10"> <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
 
-  if (loading) return null;
-  if (!token) return <Navigate to="/login" replace />;
+{/* LEFT PANEL */}
+<aside className="lg:col-span-3 space-y-2">
+
+{/* MAP CONTROLS */}
+
+<div className="border rounded-lg bg-white shadow p-5 space-y-6">
+
+  <h3 className="text-xl font-bold">Map Controls</h3>
+
+{/* BASE MAP */}
+
+  <div>
+    <div className="font-semibold mb-3">Base Map</div>
+    <div className="grid grid-cols-2 gap-3">
+
+  <button
+    onClick={() => setMapType("street")}
+    className={`py-2 rounded-md border font-medium ${
+      mapType==="street" ? "bg-blue-600 text-white" : "bg-gray-100"
+    }`}
+  >
+    Street View
+  </button>
+
+  <button
+    onClick={() => setMapType("satellite")}
+    className={`py-2 rounded-md border font-medium ${
+      mapType==="satellite" ? "bg-blue-600 text-white" : "bg-gray-100"
+    }`}
+  >
+    Satellite View
+  </button>
+
+</div>
+
+  </div>
+
+{/* LAYERS */}
+
+  <div>
+    <div className="font-semibold mb-3">Layers</div>
+
+<div className="space-y-2">
+
+  <button
+    onClick={()=>setShowHeat(!showHeat)}
+    className={`w-full py-2 rounded-md border text-left px-3 ${
+      showHeat ? "bg-blue-600 text-white border-blue-500" : "bg-gray-50"
+    }`}
+  >
+    Heatmap
+  </button>
+
+  <button
+    onClick={()=>setShowDensity(!showDensity)}
+    className={`w-full py-2 rounded-md border text-left px-3 ${
+      showDensity ? "bg-blue-600 text-white border-blue-500" : "bg-gray-100"
+    }`}
+  >
+    Density Grid
+  </button>
+
+</div>
+
+
+  </div>
+
+{/* HEAT DETAIL */}
+{showHeat && ( <div> <div className="font-semibold mb-3">Heat Detail</div> <div className="grid grid-cols-2 gap-3">
+
+    <button
+      onClick={()=>setHeatStyle("sharp")}
+      className={`py-2 rounded-md border ${
+        heatStyle==="sharp" ? "bg-blue-600 text-white" : "bg-gray-100"
+      }`}
+    >
+      Sharp
+    </button>
+
+    <button
+      onClick={()=>setHeatStyle("medium")}
+      className={`py-2 rounded-md border ${
+        heatStyle==="medium" ? "bg-blue-600 text-white" : "bg-gray-100"
+      }`}
+    >
+      Medium
+    </button>
+
+  </div>
+</div>
+
+
+)}
+
+</div>
 
 
 
-  useEffect(() => {
-  if (area.trim() !== "") return;
+{/* Legend */}
+{/* {showHeat && ( <div className="pt-2 border-t"> <div className="font-semibold mb-2">Density Legend</div> <div><span style={{background:"#7ec8ff"}} className="inline-block w-4 h-4 mr-2"></span>Low Density</div> <div><span style={{background:"#00d4ff"}} className="inline-block w-4 h-4 mr-2"></span>Moderate Density</div> <div><span style={{background:"#ffe600"}} className="inline-block w-4 h-4 mr-2"></span>High Density</div> <div><span style={{background:"#8a00ff"}} className="inline-block w-4 h-4 mr-2"></span>Extreme Congestion</div> </div>
+)} */}
 
-  // If search box is empty → reset automatically
-  fetch("http://localhost:3001/api/slums")
-    .then(res => res.json())
-    .then(data => {
-      setGeoData(data);
-      setAreaInfo(null);
-      setSchemes([]);
-    });
+{/* </div> */}
+</aside>
 
-}, [area]);
+      {/* MAP */}
+      <section className="lg:col-span-8 relative">
 
+        {/* CONTROL PANEL */}
+        {/* <div className="absolute z-[1000] left-80 top-6 bg-white shadow-lg rounded p-3 w-52 space-y-3 text-sm">
 
-  // Popup Info
- const onEachFeature = (feature, layer) => {
-  const p = feature.properties;
+          <div>
+            <div className="font-semibold mb-1">Base Map</div>
+            <label className="block">
+              <input type="radio" checked={mapType==="street"} onChange={()=>setMapType("street")} /> Street
+            </label>
+            <label className="block">
+              <input type="radio" checked={mapType==="satellite"} onChange={()=>setMapType("satellite")} /> Satellite
+            </label>
+          </div>
 
-  const popupContent = `
-    <b>${p.name}</b><br/>
-    Water: ${p.water ? "Available" : "Not Available"}<br/>
-    Toilet: ${p.toilet ? "Available" : "Not Available"}<br/>
-    Shelter: ${p.shelter ? "Permanent" : "Temporary"}<br/>
-    Density: ${p.density}
-  `;
+          <div>
+  <div className="font-semibold mb-1">Data Layers</div>
 
-  layer.bindPopup(popupContent);
+  <label className="block">
+    <input
+      type="checkbox"
+      checked={showHeat}
+      onChange={() => setShowHeat(!showHeat)}
+    /> Heatmap
+  </label>
 
-  // Auto open when only one feature
-  if (geoData && geoData.features && geoData.features.length === 1) {
-    setTimeout(() => layer.openPopup(), 200);
-  }
-};
-
-
-  // Color Styling
-  const styleFeature = (feature) => {
-    const p = feature.properties;
-
-    if (!p.shelter) return { color: "red", weight: 2 };
-    if (!p.water) return { color: "blue", weight: 2 };
-    if (!p.toilet) return { color: "orange", weight: 2 };
-
-    return { color: "green", weight: 2 };
-  };
-
-  return (
-    <div className="min-h-screen bg-white">
-      <main className="mx-auto max-w-7xl px-6 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-
-          {/* LEFT PANEL */}
-          <aside className="lg:col-span-4 space-y-4">
-
-            <input
-              type="text"
-              placeholder="Search area..."
-              value={area}
-              onChange={(e) => {
-                setArea(e.target.value);
-              }}
-              className="border p-2 rounded w-full"
-              
-            />
+{showHeat && ( <div className="ml-4 mt-2 text-xs"> <div className="font-semibold mb-1">Heat Style</div>
 
 
-            {/* <button
-              onClick={searchArea}
-              className="bg-blue-600 text-white px-4 py-2 rounded w-full"
-            >
-              Search & Show Schemes
-            </button> */}
+  <label className="block">
+    <input
+      type="radio"
+      checked={heatStyle === "sharp"}
+      onChange={() => setHeatStyle("sharp")}
+    /> Sharp
+  </label>
+
+  <label className="block">
+    <input
+      type="radio"
+      checked={heatStyle === "medium"}
+      onChange={() => setHeatStyle("medium")}
+    /> Medium
+  </label>
+
+  
+</div>
 
 
-            {areaInfo && (
-              <div className="border p-3 rounded bg-gray-50">
-                <h3 className="font-bold mb-2">Area Information</h3>
+)}
 
-                <p><b>Name:</b> {areaInfo.name}</p>
-                <p><b>Water:</b> {areaInfo.water ? "Available" : "Not Available"}</p>
-                <p><b>Toilet:</b> {areaInfo.toilet ? "Available" : "Not Available"}</p>
-                <p><b>Shelter:</b> {areaInfo.shelter ? "Permanent" : "Temporary"}</p>
-                <p><b>Density:</b> {areaInfo.density}</p>
-              </div>
-            )}
+  <label className="block">
+    <input
+      type="checkbox"
+      checked={showDensity}
+      onChange={() => setShowDensity(!showDensity)}
+    /> Density Grid
+  </label>
 
-            {/* Scheme Info */}
-           <div className="mt-4">
-              <h3 className="font-bold text-lg">Applicable Government Schemes</h3>
-
-              {schemes.length === 0 && areaInfo && (
-                <p className="text-gray-500">No schemes available for this area</p>
-              )}
-
-              {schemes.map((s) => (
-                <div key={s._id} className="border p-3 mt-3 rounded bg-blue-50">
-                  <p className="font-semibold">{s.name}</p>
-                  <p className="text-sm">{s.description}</p>
-                  <a href={s.officialLink} target="_blank" className="text-blue-600 underline">
-                    Official Website
-                  </a>
-                </div>
-              ))}
-            </div>
+  
+</div>
 
 
-          </aside>
+        </div> */}
 
-          {/* MAP */}
-          <section className="lg:col-span-8">
-            <MapContainer
-              center={[18.5204, 73.8567]}
-              zoom={12}
-              whenCreated={(map) => (mapRef.current = map)}
-              style={{ height: "80vh" }}
-            >
-              <TileLayer
-                  url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-                  subdomains={['mt0','mt1','mt2','mt3']}
-                  maxZoom={20}
-                />
-
-
-              {geoData && (
-                <>
-                  <GeoJSON
-                    data={geoData}
-                    style={styleFeature}
-                    onEachFeature={onEachFeature}
-                  />
-
-                  <FitBounds geoData={geoData} />
-                </>
-              )}
-            </MapContainer>
-
-          </section>
-
+        {/* LEGEND */}
+        <div className="absolute bottom-6 left-6 bg-white shadow-md rounded p-5 text-[2.3vh] z-[1000]">
+          <div className="font-semibold mb-2">Density Legend</div>
+          <div><span style={{background:"#7ec8ff"}} className="inline-block w-4 h-4 mr-2"></span>Low</div>
+          <div><span style={{background:"#00d4ff  "}} className="inline-block w-4 h-4 mr-2"></span>Medium</div>
+          <div><span style={{background:"#ffe600  "}} className="inline-block w-4 h-4 mr-2"></span>High</div>
+          <div><span style={{background:"#8a00ff  "}} className="inline-block w-4 h-4 mr-2"></span>Extreme</div>
         </div>
-      </main>
+
+        <MapContainer
+          center={[19.117,72.90]}
+          zoom={14}
+          whenCreated={(map) => (mapRef.current = map)}
+          style={{ height: "80vh"}}
+          preferCanvas={true}
+        >
+
+          {mapType === "street" ? (
+            <TileLayer
+              attribution='&copy; OpenStreetMap'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          ) : (
+            <TileLayer
+              attribution="Tiles © Esri"
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            />
+          )}
+
+          <SlumHeatLayer visible={showHeat} styleType={heatStyle}/>
+          {showDensity && <SlumLayer/>}
+
+          {showBoundary && geoData && (
+            <GeoJSON data={geoData} style={{color:"red",weight:2,fillOpacity:0.05}}/>
+          )}
+
+        </MapContainer>
+
+      </section>
+
+
     </div>
-  );
+  </main>
+</div>
+
+);
 }
 
 export default ExploreMaps;

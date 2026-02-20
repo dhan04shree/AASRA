@@ -4,7 +4,7 @@ require("dotenv").config();
 const pool = new Pool({
   user: "postgres",
   host: "localhost",
-  database: "aasra_geo",
+  database: "aasra_db",
   password: process.env.POSTGRES_PASS,
   port: 5432,
 });

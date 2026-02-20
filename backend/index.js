@@ -21,6 +21,11 @@ app.use("/api/auth",authRoute);
 app.use("/api/eligibility", require("./routes/eligibility"));
 app.use("/api/schemes", require("./routes/schemes"));
 app.use("/api/slums", require("./routes/slums"));
+app.use("/api/slum_data", require("./routes/slum_data"));
+app.use("/api/slum_density", require("./routes/slumDensity"));
+app.use("/api/slum_heat", require("./routes/slumHeat"));
+
+
 app.use("/api/schememap", require("./routes/schemeMap"));
 app.use("/api/area", require("./routes/areaSearch"));
 app.use("/api/filter", require("./routes/filter"));
