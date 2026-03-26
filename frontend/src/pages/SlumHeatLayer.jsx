@@ -26,7 +26,7 @@ if (!visible) return;
 
 
 const b = map.getBounds();
-const url = `http://localhost:3001/api/slum_heat?minLng=${b.getWest()}&minLat=${b.getSouth()}&maxLng=${b.getEast()}&maxLat=${b.getNorth()}`;
+const url = `${import.meta.env.VITE_BACKEND_URL}/api/slum_heat?minLng=${b.getWest()}&minLat=${b.getSouth()}&maxLng=${b.getEast()}&maxLat=${b.getNorth()}`;
 
 const res = await fetch(url);
 const points = await res.json();

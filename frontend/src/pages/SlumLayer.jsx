@@ -10,7 +10,7 @@ const b = map.getBounds();
 if (!b.isValid()) return;
 
 
-const url = `http://localhost:3001/api/slum_density?minLng=${b.getWest()}&minLat=${b.getSouth()}&maxLng=${b.getEast()}&maxLat=${b.getNorth()}`;
+const url = `${import.meta.env.VITE_BACKEND_URL}/api/slum_density?minLng=${b.getWest()}&minLat=${b.getSouth()}&maxLng=${b.getEast()}&maxLat=${b.getNorth()}`;
 
 fetch(url)
   .then(r => r.json())

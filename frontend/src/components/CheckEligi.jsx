@@ -28,7 +28,7 @@ export default function CheckEligi() {
     e.preventDefault();
     setLoading(true);
 
-    const res = await axios.post("http://localhost:3001/api/eligibility", {
+    const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/eligibility`, {
       ...formData,
       income: Number(formData.income),
       age: Number(formData.age),

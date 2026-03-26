@@ -16,7 +16,7 @@ function ViewSchemes() {
   // Fetch schemes from backend
   useEffect(() => {
     axios
-      .get("http://localhost:3001/api/schemes")
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/schemes`)
       .then((res) => setSchemes(res.data))
       .catch((err) => console.log(err));
   }, []);

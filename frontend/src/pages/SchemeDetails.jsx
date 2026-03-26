@@ -8,7 +8,7 @@ export default function SchemeDetails() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/api/schemes/${id}`)
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/schemes/${id}`)
       .then((res) => setScheme(res.data))
       .catch((err) => console.log(err));
   }, [id]);

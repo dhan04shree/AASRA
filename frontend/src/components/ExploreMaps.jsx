@@ -40,7 +40,7 @@ if (!area.trim()) return;
 
 
 const timer = setTimeout(async () => {
-  const res = await fetch(`http://localhost:3001/api/area/${area}`);
+  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/area/${area}`);
   if (!res.ok) return;
 
   const data = await res.json();
