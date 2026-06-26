@@ -46,7 +46,7 @@ function ViewSchemes() {
               </p>
 
               <div className="mt-4 text-sm text-gray-500">
-                <p><strong>State:</strong> {scheme.state}</p>
+                <p><strong>Applicable to:</strong> {scheme.state}</p>
                 <p><strong>Type:</strong> {scheme.type}</p>
               </div>
 

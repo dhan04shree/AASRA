@@ -1,7 +1,11 @@
 import { ArrowRight, CheckCircle2, MapPin, FileText, ClipboardList } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
+import { useEffect, useState } from "react";
+import axios from "axios";
 export default function HomePage() {
   const navigate = useNavigate();
+  const [featuredSchemes, setFeaturedSchemes] = useState([]);
   const quickNavCards = [
     {
       title: "Check Eligibility",
@@ -36,6 +40,23 @@ export default function HomePage() {
       link: "/maps"
     },
   ];
+
+  useEffect(() => {
+  const fetchSchemes = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/schemes`
+      );
+
+      // Show only first 3 schemes on homepage
+      setFeaturedSchemes(res.data.slice(7, 10));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  fetchSchemes();
+}, []);
 
   return (
     <div className="w-full bg-white text-gray-900">
@@ -224,72 +245,84 @@ export default function HomePage() {
 </section>
     
 {/* ================= FEATURED SCHEMES ================= */}
+
 <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-14">
+
   <div className="flex items-end justify-between flex-wrap gap-4">
+
     <div>
       <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
         Featured Housing Schemes
       </h2>
+
       <p className="text-gray-600 mt-2">
-        Quickly explore schemes most relevant for rehabilitation.
+        Explore government housing and rehabilitation schemes.
       </p>
     </div>
 
-    <button className="text-blue-700 font-semibold hover:underline">
+    <button
+      onClick={() => navigate("/schemes")}
+      className="text-blue-700 font-semibold hover:underline"
+    >
       View All Schemes →
     </button>
+
   </div>
 
   <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-    {[
-      {
-        name: "PMAY - Urban",
-        type: "Central Scheme",
-        deadline: "Open",
-        highlight: "Subsidy Support",
-      },
-      {
-        name: "MHADA Housing",
-        type: "State Scheme",
-        deadline: "Limited Slots",
-        highlight: "Affordable Flats",
-      },
-      {
-        name: "Slum Rehabilitation",
-        type: "Urban Development",
-        deadline: "Active",
-        highlight: "Rehabilitation Projects",
-      },
-    ].map((scheme, idx) => (
+
+    {featuredSchemes.map((scheme) => (
+
       <div
-        key={idx}
-        className="rounded-2xl border bg-white p-6 shadow-sm hover:shadow-xl transition"
+        key={scheme._id}
+        className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-lg transition flex flex-col h-full"
       >
-        <div className="flex items-center justify-between gap-3">
-          <div className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-700">
+
+        {/* Top */}
+        <div className="flex justify-between items-center">
+
+          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-700">
             {scheme.type}
-          </div>
-          <div className="text-xs font-semibold px-3 py-1 rounded-full bg-green-50 text-green-700">
-            {scheme.deadline}
-          </div>
+          </span>
+
+          <span
+            className={`text-xs font-semibold px-3 py-1 rounded-full ${
+              scheme.status === "Active"
+                ? "bg-green-50 text-green-700"
+                : scheme.status === "Upcoming"
+                ? "bg-yellow-50 text-yellow-700"
+                : "bg-red-50 text-red-700"
+            }`}
+          >
+            {scheme.status}
+          </span>
+
         </div>
 
-        <h3 className="mt-4 text-lg font-bold text-gray-900">{scheme.name}</h3>
-        <p className="text-sm text-gray-600 mt-2">
-          Benefit: <span className="font-semibold">{scheme.highlight}</span>
-        </p>
+        {/* Scheme Name */}
+        <h3 className="mt-5 text-xl font-bold text-gray-900">
+          {scheme.name}
+        </h3>
 
-        <div className="mt-5 flex gap-3">
-          <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition">
-            Apply
-          </button>
-          <button className="flex-1 border border-gray-200 hover:bg-gray-50 px-4 py-2 rounded-lg font-semibold transition">
-            Details
-          </button>
-        </div>
+        {/* Description */}
+        <p className="mt-3 text-gray-600 text-sm min-h-[72px] line-clamp-3">
+  {scheme.description}
+</p>
+
+        {/* Button */}
+       <button
+  onClick={() => navigate(`/schemes/${scheme._id}`)}
+  className="mt-auto w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-semibold transition"
+>
+          View Details
+        </button>
+
       </div>
+
     ))}
+
   </div>
+
 </section>
 {/* ================= IMPACT STATS =================  */}
 {/* <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-14">

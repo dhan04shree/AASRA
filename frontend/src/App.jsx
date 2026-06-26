@@ -1,5 +1,6 @@
 
 import './App.css'
+import ScrollToTop from "./components/ScrollToTop";
 import Dashboard from "./components/Dashboard"
 import Login from './components/LoginForm'
 import Navbar from './components/Navbar'
@@ -23,6 +24,7 @@ function App() {
   return (
     <>
     <Navbar/>
+    <ScrollToTop />
       <Routes>
         <Route path="/" element={<HomePage/>}></Route>
 
