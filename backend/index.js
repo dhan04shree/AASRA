@@ -7,6 +7,8 @@ require("dotenv").config();
 const authRoute = require("./routes/auth")
 
 const DB_URL = process.env.MONGO_URL
+
+console.log(DB_URL);
 mongoose.connect(DB_URL)
    .then(() => {
     console.log("Connected to db");
